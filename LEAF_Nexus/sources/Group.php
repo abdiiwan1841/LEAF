@@ -825,7 +825,7 @@ class Group extends Data
      */
     public function removeEmployee($groupID, $empUID)
     {
-        if (!is_numeric($groupID) || !is_numeric($empUID))
+        if (!is_numeric($groupID))
         {
             return 0;
         }
