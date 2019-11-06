@@ -702,7 +702,12 @@
                     if (empSel.selection === '') {
                         $('#<!--{$indicator.indicatorID|strip_tags}-->').val('');
                     } else {
-                        $('#loadingIndicator_<!--{$indicator.indicatorID}-->').html('*** Please wait. Database busy. ***');
+                        var selectedFirst = empSel.selectionData[empSel.selection].firstName;
+                        var selectedLast = empSel.selectionData[empSel.selection].lastName;
+                        $("#" + empSel.prefixID + 'input').val(selectedLast + ', ' + selectedFirst);
+                        empSel.q = selectedLast + ', ' + selectedFirst;
+
+                        $('#loadingIndicator_<!--{$indicator.indicatorID}-->').html('*** Loading... ***');
                         var selectedUserName = empSel.selectionData[empSel.selection].userName;
                         $.ajax({
                             type: 'POST',
