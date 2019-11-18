@@ -79,6 +79,50 @@ class SiteHelper
         return $res;
     }
 
+    //pass in array of sites
+    //get res that's an array of sites by type
+    public function organizeSitesV2($sites)
+    {
+        $res = ["orgcharts"=>[], "portals"=>[]];
+        $orgcharts = [];
+        $orgchartReverse = [];
+        $portals = [];
+
+        foreach ($sites as $site)
+        {
+            if ($site->site_type === 'portal')
+            {
+                $portals[] = $site;
+            }
+            else if ($site->site_type === 'orgchart')
+            {
+                $orgcharts[] = $site;
+            }
+        }
+        //add orgcharts to res
+        foreach ($orgcharts as $orgchart)
+        {
+            
+            if (!array_key_exists($orgchart->database, $res["orgcharts"]))
+            {
+                $res["orgcharts"][$orgchart->database] = [];
+                $res["orgcharts"][$orgchart->database]['name'] = $orgchart->database;
+            }
+        }
+        //add portal to it's orgchart in res
+        foreach ($portals as $portal)
+        {
+            if (!array_key_exists($portal->database, $res["portals"]))
+            {
+                $res["portals"][$portal->database] = [];
+                $res["portals"][$portal->database]['name'] = $portal->database;
+                $res["portals"][$portal->database]['orgchartDB'] = $portal->orgchart_database;
+            }
+        }
+
+        return $res;
+    }
+
     //pass the directory, return sites
     public function parseSiteDirectory($directory, $orgchartLogger = null, $portalLogger = null, $errorLogger = null)
     {
@@ -254,7 +298,7 @@ $sh = new SiteHelper($phpPath, $scriptsPath);
 
 $sitesFound = $sh->parseSiteDirectory($sitesPath);
 
-$organizedSites = $sh->organizeSites($sitesFound);
+$organizedSites = $sh->organizeSitesV2($sitesFound);
 
 file_put_contents ( $outputPath , json_encode($organizedSites));
 
