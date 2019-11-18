@@ -2,6 +2,7 @@
 $nexiToSkip = [];
 $portalsToSkip = [];
 $nog = '';
+$pathToSitemapJSON = "/path/to/sitemap/siteStructure.json";
 function buildUpdateScriptFromNationalOG($db)
 {
     $nationalEmployeeData = $db->query('select employee.* from employee order By employee.lastUpdated');
@@ -298,7 +299,7 @@ function preparePortal($db)
     $db->commit();
 }
 
-function updatePortal($db, $nationalEmpUIDImport)
+function updatePortal($db, $orgchartDB, $nationalEmpUIDImport)
 {
     $tablesWithEmpUID = [
         //empUID's
@@ -321,13 +322,13 @@ function updatePortal($db, $nationalEmpUIDImport)
         $sqlFillInEmpUIDBlanks = "UPDATE users SET empUID=CONCAT('not_in_national_', userID) WHERE empUID IS NULL;";
         $db->query($sqlFillInEmpUIDBlanks);
 
-        $sqlEmployeeInfo = 'select * from users;';
-        $res = $db->query($sqlEmployeeInfo);
+        $sqlEmployeeInfo = 'select * from employee;';
+        $res = $orgchartDB->query($sqlEmployeeInfo);
 
         $employeesKeyedByOldEmpUIDs = array();
         foreach ($res as $employeeData)
         {
-            $employee = ['userID' => $employeeData['userID'], 'empUID' => $employeeData['empUID']];
+            $employee = ['userID' => $employeeData['userName'], 'empUID' => $employeeData['empUID']];
 
             //add empUID to list
             $employeesKeyedByOldEmpUIDs[] = $employee;
@@ -486,9 +487,9 @@ function getUnmigratedNexi($db)
     }
     return $arrayToReturn;
 }
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 $dbHOST = $argv[1];
 $dbUser = $argv[2];
@@ -542,7 +543,8 @@ $db = new PDO(
 
 $localNexusArray = getUnmigratedNexi($db);
 $localPortalArray = getUnmigratedPortals($db);
-
+$portalsWithOrgchartsArray = json_decode(file_get_contents($pathToSitemapJSON), true);
+$portalsWithOrgchartsArray = $portalsWithOrgchartsArray["portals"];
 
 
 //do individual nexi
@@ -591,8 +593,23 @@ foreach($localPortalArray as $key => $dbName)
             array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
         );
 
-        preparePortal($db);
-        updatePortal($db, $nationalEmpUIDImport['portalImport']);
+        $og_dbName = array_key_exists($dbName, $portalsWithOrgchartsArray) ? $portalsWithOrgchartsArray[$dbName]['orgchartDB'] : null;
+        if(!empty($og_dbName))
+        {
+            $orgChartDB = new PDO(
+                "mysql:host={$dbHOST};dbname={$og_dbName}",
+                $dbUser,
+                $dbPass,
+                array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
+            );
+
+            preparePortal($db);
+            updatePortal($db, $orgChartDB, $nationalEmpUIDImport['portalImport']);
+        }
+        else
+        {
+            echo PHP_EOL."Skipping ".$dbName.", no valid orgchart.".PHP_EOL;
+        }
     }
 }
 

@@ -271,7 +271,7 @@ class SiteHelper
     public function readNexusConfig($portalDirectory)
     {
         $phpPath = $this->phpPath;
-        $script = $this->scriptsDir . '\read_orgchart_config.php';//var_dump($phpPath . ' ' . $script . ' ' . $portalDirectory);
+        $script = $this->scriptsDir . '\read_orgchart_config.php';var_dump($phpPath . ' ' . $script . ' ' . $portalDirectory);
         $result = shell_exec($phpPath . ' ' . $script . ' ' . $portalDirectory) ;//var_dump($result);
         return unserialize($result);
     }
@@ -279,7 +279,7 @@ class SiteHelper
     public function readPortalConfig($portalDirectory)
     {
         $phpPath = $this->phpPath;
-        $script = $this->scriptsDir . '\read_portal_config.php';//var_dump($phpPath . ' ' . $script . ' '. $portalDirectory);
+        $script = $this->scriptsDir . '\read_portal_config.php';var_dump($phpPath . ' ' . $script . ' '. $portalDirectory);
         $result = shell_exec($phpPath . ' ' . $script . ' '. $portalDirectory);//var_dump($result);
         return unserialize($result);
     }
