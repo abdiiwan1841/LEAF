@@ -6,9 +6,9 @@ $outputPath = "C:\Users\jerem\Documents\GitHub\LEAF\LEAF_mig_work\siteStructure.
 
 $string = file_get_contents($outputPath);
 
-$array = json_decode($string, true);
+$array = json_decode(file_get_contents($outputPath), true);
 
 foreach ($array["portals"] as $portalDB => $portal) 
 {
-    echo $portalDB . "--".$portal['orgchartDB']."\n";
+    echo $portalDB . "--".$array["portals"][$portalDB]['orgchartDB']."\n";
 }
