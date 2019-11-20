@@ -435,11 +435,12 @@ function checkNationalForUpdate($db)
     return count($res) > 0;
 }
 
-function getUnmigratedPortals($db)
+function getUnmigratedPortals($db, $extraConditions)
 {
     $sql = "SELECT CAST(table_schema as BINARY) as database_name, table_name, GROUP_CONCAT(column_name) as field_list, count(*)
             from information_schema.columns
             where table_name = 'users'
+            $extraConditions
             GROUP BY database_name
             Having Find_In_Set('empUID',field_list)=0
             AND Find_In_Set('userID',field_list)>0
@@ -456,12 +457,13 @@ function getUnmigratedPortals($db)
     return $arrayToReturn;
 }
 
-function getUnmigratedNexi($db)
+function getUnmigratedNexi($db, $extraConditions)
 {
     $sql = "SELECT CAST(table_schema as BINARY) as database_name, table_name, GROUP_CONCAT(column_name) as field_list
             from information_schema.columns
             where table_name = 'employee'
             AND table_schema != '$nog'
+            $extraConditions
             GROUP BY database_name
             Having 
             Find_In_Set('empUID',field_list)>0
