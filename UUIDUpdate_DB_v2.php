@@ -487,25 +487,48 @@ function getUnmigratedNexi($db)
     }
     return $arrayToReturn;
 }
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+ini_set('max_execution_time', 0);
+ini_set('memory_limit', '-1');
 
 $dbHOST = $argv[1];
 $dbUser = $argv[2];
 $dbPass = $argv[3];
+$procToRun = $argv[4];
 
-ini_set('max_execution_time', 0);
-ini_set('memory_limit', '-1');
+$processes = [];
 
-$db = new PDO(
-    "mysql:host={$dbHOST};",
-    $dbUser,
-    $dbPass,
-    array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
-);
+if($procToRun == "national")
+{
+    $db = new PDO(
+        "mysql:host={$dbHOST};",
+        $dbUser,
+        $dbPass,
+        array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
+    );
 
-if(checkNationalForUpdate($db))
+    if(checkNationalForUpdate($db))
+    {
+        $nationalOG = $nog;
+        $db = new PDO(
+            "mysql:host={$dbHOST};dbname={$nationalOG}",
+            $dbUser,
+            $dbPass,
+            array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
+        );
+
+        // echo PHP_EOL.PHP_EOL."updating national orgchart".PHP_EOL;
+        dropForeignKeysFromNationalOrgchart($db);
+        prepareNexus($db);
+        updateNexus($db);
+        finishUpNexus($db);
+        addForeignKeysBackToNationalOrgchart($db);  
+    }
+}
+else
 {
     $nationalOG = $nog;
     $db = new PDO(
@@ -515,103 +538,92 @@ if(checkNationalForUpdate($db))
         array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
     );
 
-    // echo PHP_EOL.PHP_EOL."updating national orgchart".PHP_EOL;
-    dropForeignKeysFromNationalOrgchart($db);
-    prepareNexus($db);
-    updateNexus($db);
-    finishUpNexus($db);
-    addForeignKeysBackToNationalOrgchart($db);  
-}
+    //build update script for individual nexus
+    $nationalEmpUIDImport = buildUpdateScriptFromNationalOG($db);
 
-$nationalOG = $nog;
-$db = new PDO(
-    "mysql:host={$dbHOST};dbname={$nationalOG}",
-    $dbUser,
-    $dbPass,
-    array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
-);
+    $db = new PDO(
+        "mysql:host={$dbHOST};",
+        $dbUser,
+        $dbPass,
+        array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
+    );
 
-//build update script for individual nexus
-$nationalEmpUIDImport = buildUpdateScriptFromNationalOG($db);
+    if(substr( $procToRun, 0, 5 ) === "nexus" && array_key_exists($procToRun, $processes))
+    {
+        $localNexusArray = getUnmigratedNexi($db, $processes[$procToRun]);
 
-$db = new PDO(
-    "mysql:host={$dbHOST};",
-    $dbUser,
-    $dbPass,
-    array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
-);
-
-$localNexusArray = getUnmigratedNexi($db);
-$localPortalArray = getUnmigratedPortals($db);
-$portalsWithOrgchartsArray = json_decode(file_get_contents($pathToSitemapJSON), true);
-$portalsWithOrgchartsArray = $portalsWithOrgchartsArray["portals"];
-
-
-//do individual nexi
-echo PHP_EOL.PHP_EOL."updating local nexi".PHP_EOL;
-foreach($localNexusArray as $key => $dbName)
-{
-    if (!in_array($dbName, $nexiToSkip, true)) {
-        echo PHP_EOL." Doing " . $dbName . " " . (new \DateTime())->format('H:i:s')." ".memory_get_usage () . PHP_EOL;
-        $db = new PDO(
-            "mysql:host={$dbHOST};dbname={$dbName}",
-            $dbUser,
-            $dbPass,
-            array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
-        );
-
-        $numberOfUnique = getUniqueEmailCount($db);
-        prepareNexus($db);
-        updateNexus($db, $nationalEmpUIDImport['nexusImport']);
-        finishUpNexus($db);
-        $numberOfActive = getActiveUserCount($db);
-
-        $duplicates = duplicateActiveEmails($db);
-
-        echo "active unique emails: " . $numberOfUnique . ", # of active users: " . $numberOfActive . ", duplicate active emails: " . $duplicates;
-        if($numberOfUnique === $numberOfActive && $duplicates === '0')
+        //do individual nexi
+        echo PHP_EOL.PHP_EOL."updating local nexi".PHP_EOL;
+        foreach($localNexusArray as $key => $dbName)
         {
-            echo " All is well.";
+            if (!in_array($dbName, $nexiToSkip, true)) {
+                echo PHP_EOL." Doing " . $dbName . " " . (new \DateTime())->format('H:i:s')." ".memory_get_usage () . PHP_EOL;
+                $db = new PDO(
+                    "mysql:host={$dbHOST};dbname={$dbName}",
+                    $dbUser,
+                    $dbPass,
+                    array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
+                );
+
+                $numberOfUnique = getUniqueEmailCount($db);
+                prepareNexus($db);
+                updateNexus($db, $nationalEmpUIDImport['nexusImport']);
+                finishUpNexus($db);
+                $numberOfActive = getActiveUserCount($db);
+
+                $duplicates = duplicateActiveEmails($db);
+
+                echo "active unique emails: " . $numberOfUnique . ", # of active users: " . $numberOfActive . ", duplicate active emails: " . $duplicates;
+                if($numberOfUnique === $numberOfActive && $duplicates === '0')
+                {
+                    echo " All is well.";
+                }
+                else
+                {
+                    echo PHP_EOL."There was a problem. Unique emails should equal active users. And there should be no duplicate active emails.".PHP_EOL;
+                }
+            }
         }
-        else
+    }
+    else if(substr( $procToRun, 0, 6 ) === "portal" && array_key_exists($procToRun, $processes))
+    {
+        $localPortalArray = getUnmigratedPortals($db, $processes[$procToRun]);
+        $portalsWithOrgchartsArray = json_decode(file_get_contents($pathToSitemapJSON), true);
+        $portalsWithOrgchartsArray = $portalsWithOrgchartsArray["portals"];
+
+        //do portal
+        echo PHP_EOL.PHP_EOL."updating portals".PHP_EOL;
+        foreach($localPortalArray as $key => $dbName)
         {
-            echo PHP_EOL."There was a problem. Unique emails should equal active users. And there should be no duplicate active emails.".PHP_EOL;
+            if (!in_array($dbName, $portalsToSkip, true)) {
+                echo PHP_EOL." Doing " . $dbName . " " . (new \DateTime())->format('H:i:s')." ".memory_get_usage () . PHP_EOL;
+                $db = new PDO(
+                    "mysql:host={$dbHOST};dbname={$dbName}",
+                    $dbUser,
+                    $dbPass,
+                    array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
+                );
+
+                $og_dbName = array_key_exists($dbName, $portalsWithOrgchartsArray) ? $portalsWithOrgchartsArray[$dbName]['orgchartDB'] : null;
+                if(!empty($og_dbName))
+                {
+                    $orgChartDB = new PDO(
+                        "mysql:host={$dbHOST};dbname={$og_dbName}",
+                        $dbUser,
+                        $dbPass,
+                        array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
+                    );
+
+                    preparePortal($db);
+                    updatePortal($db, $orgChartDB, $nationalEmpUIDImport['portalImport']);
+                }
+                else
+                {
+                    echo PHP_EOL."Skipping ".$dbName.", no valid orgchart.".PHP_EOL;
+                }
+            }
         }
     }
 }
-
-//do portal
-echo PHP_EOL.PHP_EOL."updating portals".PHP_EOL;
-foreach($localPortalArray as $key => $dbName)
-{
-    if (!in_array($dbName, $portalsToSkip, true)) {
-        echo PHP_EOL." Doing " . $dbName . " " . (new \DateTime())->format('H:i:s')." ".memory_get_usage () . PHP_EOL;
-        $db = new PDO(
-            "mysql:host={$dbHOST};dbname={$dbName}",
-            $dbUser,
-            $dbPass,
-            array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
-        );
-
-        $og_dbName = array_key_exists($dbName, $portalsWithOrgchartsArray) ? $portalsWithOrgchartsArray[$dbName]['orgchartDB'] : null;
-        if(!empty($og_dbName))
-        {
-            $orgChartDB = new PDO(
-                "mysql:host={$dbHOST};dbname={$og_dbName}",
-                $dbUser,
-                $dbPass,
-                array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
-            );
-
-            preparePortal($db);
-            updatePortal($db, $orgChartDB, $nationalEmpUIDImport['portalImport']);
-        }
-        else
-        {
-            echo PHP_EOL."Skipping ".$dbName.", no valid orgchart.".PHP_EOL;
-        }
-    }
-}
-
 echo PHP_EOL.PHP_EOL."Finished";
 ?>
