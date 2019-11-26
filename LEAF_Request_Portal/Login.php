@@ -164,9 +164,9 @@ class Login
         $this->baseDir = "/{$baseDir}";
     }
 
-    public function parseURL($in)
-    {
-      $url = str_replace('/var/www/html', '', $in);
+    public function parseURL($in){
+    
+      $url = str_replace(Config::$rootPath, '', $in);
 
       return $url;
     }
