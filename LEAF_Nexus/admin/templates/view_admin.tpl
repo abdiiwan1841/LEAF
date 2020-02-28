@@ -76,6 +76,14 @@ Programmer Options:<br />
     </span>
 </a>
 
+<a href="?a=admin_update_database" tabindex="-1">
+    <span class="menuButton" style="background-color: #dce4ef" tabindex="0">
+        <img class="menuIcon" src="../../libs/dynicons/?img=application-x-executable.svg&amp;w=96" style="position: relative" alt="Database Update" title="Database Update" />
+        <span class="menuText">Import Nexus</span><br />
+        <span class="menuDesc">Batch import employees, supervisors, and position names</span>
+    </span>
+</a>
+
 
 </div>
 
