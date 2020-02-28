@@ -5,6 +5,8 @@ body {
     font-size: 12px;
 }
 
+.margin-1rem-all { margin: 1rem;}
+
 body a:link, body a:visited {
     color: #004b76;
 }

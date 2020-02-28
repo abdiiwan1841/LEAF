@@ -109,6 +109,24 @@ switch ($action) {
         $tabText = 'System Administration';
 
         break;
+    case 'import_nexus':
+        $t_form = new Smarty;
+        $t_form->left_delimiter = '<!--{';
+        $t_form->right_delimiter = '}-->';
+
+        $memberships = $login->getMembership();
+        if (isset($memberships['groupID'][1]))
+        {
+            $main->assign('body', $t_form->fetch('admin_import_nexus.tpl'));
+        }
+        else
+        {
+            $main->assign('body', 'You require System Administrator level access to view this section.');
+        }
+
+        $tabText = 'Import Nexus';
+
+        break;
     case 'mod_system':
            $t_form = new Smarty;
            $t_form->left_delimiter = '<!--{';
@@ -224,7 +242,8 @@ switch ($action) {
                                            'js/positionSelector.js',
                                            'js/groupSelector.js',
                                            'js/dialogController.js',
-                                           'js/orgchartForm.js', ));
+                                           'js/orgchartForm.js',
+                                         ));
         $main->assign('stylesheets', array('css/employeeSelector.css',
                                            'css/view_employee.css',
                                            'css/positionSelector.css',
