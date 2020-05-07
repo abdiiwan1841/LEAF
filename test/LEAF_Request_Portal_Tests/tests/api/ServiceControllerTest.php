@@ -23,6 +23,8 @@ final class ServiceControllerTest extends DatabaseTest
 
     /**
      * Tests the POST `service` endpoint
+     *
+     * @return void
      */
     public function testService() : void
     {
@@ -89,7 +91,7 @@ final class ServiceControllerTest extends DatabaseTest
         $this->assertArrayHasKey('service', $service);
         $this->assertEquals(1, $service['groupID']);
         $this->assertEquals('A_NEWSERVICEFORsysadmin', $service['service']);
-        $this->assertEquals('', isset($service['serviceID'])? $service['serviceID'] : '');
+        $this->assertEquals('', isset($service['serviceID']) ? $service['serviceID'] : '');
         $this->assertEquals('', isset($service['abbreviatedService']) ? $service['abbreviatedService'] : '');
 
         //add 2nd service, groupID==1
@@ -102,9 +104,8 @@ final class ServiceControllerTest extends DatabaseTest
         $this->assertEquals(1, $service['groupID']);
         $this->assertNotEquals('A_NEWSERVICEFORsysadmin', $service['service']);
         $this->assertEquals('B_NEWSERVICEFORsysadmin', $service['service']);
-        $this->assertEquals('', isset($service['serviceID'])? $service['serviceID'] : '');
+        $this->assertEquals('', isset($service['serviceID']) ? $service['serviceID'] : '');
         $this->assertEquals('', isset($service['abbreviatedService']) ? $service['abbreviatedService'] : '');
-        //$this->assertEmpty($service[1]['members']);
 
         //add 3rd service, groupID==-1
         self::$client->post(array('a' => 'service'), $newService3);
@@ -117,7 +118,7 @@ final class ServiceControllerTest extends DatabaseTest
         $this->assertNotEquals('A_NEWSERVICEFORsysadmin', $service['service']);
         $this->assertNotEquals('B_NEWSERVICEFORsysadmin', $service['service']);
         $this->assertEquals('C_NEWSERVICEFORQuadrad', $service['service']);
-        $this->assertEquals('', isset($service['serviceID'])? $service['serviceID'] : '');
+        $this->assertEquals('', isset($service['serviceID']) ? $service['serviceID'] : '');
         $this->assertEquals('', isset($service['abbreviatedService']) ? $service['abbreviatedService'] : '');
 
         //add 4th service, groupID==2
@@ -132,7 +133,7 @@ final class ServiceControllerTest extends DatabaseTest
         $this->assertNotEquals('B_NEWSERVICEFORsysadmin', $service['service']);
         $this->assertNotEquals('C_NEWSERVICEFORQuadrad', $service['service']);
         $this->assertEquals('D_NEWSERVICEFORQuadrad', $service['service']);
-        $this->assertEquals('', isset($service['serviceID'])? $service['serviceID'] : '');
+        $this->assertEquals('', isset($service['serviceID']) ? $service['serviceID'] : '');
         $this->assertEquals('', isset($service['abbreviatedService']) ? $service['abbreviatedService'] : '');
 
 
@@ -149,7 +150,7 @@ final class ServiceControllerTest extends DatabaseTest
         $this->assertNotEquals('C_NEWSERVICEFORQuadrad', $service['service']);
         $this->assertNotEquals('D_NEWSERVICEFORQuadrad', $service['service']);
         $this->assertEquals('E_NEWSERVICEFORTestGroup', $service['service']);
-        $this->assertEquals('', isset($service['serviceID'])? $service['serviceID'] : '');
+        $this->assertEquals('', isset($service['serviceID']) ? $service['serviceID'] : '');
         $this->assertEquals('', isset($service['abbreviatedService']) ? $service['abbreviatedService'] : '');
 
         //add 6th service, groupID==2
@@ -166,7 +167,7 @@ final class ServiceControllerTest extends DatabaseTest
         $this->assertNotEquals('D_NEWSERVICEFORQuadrad', $service['service']);
         $this->assertNotEquals('E_NEWSERVICEFORTestGroup', $service['service']);
         $this->assertEquals('F_NEWSERVICEFORTestGroup', $service['service']);
-        $this->assertEquals('', isset($service['serviceID'])? $service['serviceID'] : '');
+        $this->assertEquals('', isset($service['serviceID']) ? $service['serviceID'] : '');
         $this->assertEquals('', isset($service['abbreviatedService']) ? $service['abbreviatedService'] : '');
 
         //add 7th service, groupID==0(no matching group in database)
@@ -184,7 +185,7 @@ final class ServiceControllerTest extends DatabaseTest
         $this->assertNotEquals('E_NEWSERVICEFORTestGroup', $service['service']);
         $this->assertNotEquals('F_NEWSERVICEFORTestGroup', $service['service']);
         $this->assertEquals('G_NEWSERVICEFORNoGroup', $service['service']);
-        $this->assertEquals('', isset($service['serviceID'])? $service['serviceID'] : '');
+        $this->assertEquals('', isset($service['serviceID']) ? $service['serviceID'] : '');
         $this->assertEquals('', isset($service['abbreviatedService']) ? $service['abbreviatedService'] : '');
 
         //add 8th service, groupID==0(no matching group in database)
@@ -203,7 +204,7 @@ final class ServiceControllerTest extends DatabaseTest
         $this->assertNotEquals('F_NEWSERVICEFORTestGroup', $service['service']);
         $this->assertNotEquals('G_NEWSERVICEFORNoGroup', $service['service']);
         $this->assertEquals('H_NEWSERVICEFORNoGroup', $service['service']);
-        $this->assertEquals('', isset($service['serviceID'])? $service['serviceID'] : '');
+        $this->assertEquals('', isset($service['serviceID']) ? $service['serviceID'] : '');
         $this->assertEquals('', isset($service['abbreviatedService']) ? $service['abbreviatedService'] : '');
 
         //add 9th service, empty string for service (won't add)
@@ -223,7 +224,7 @@ final class ServiceControllerTest extends DatabaseTest
         $this->assertNotEquals('G_NEWSERVICEFORNoGroup', $service['service']);
         $this->assertNotEquals('H_NEWSERVICEFORNoGroup', $service['service']);
         $this->assertEquals('', $service['service']);
-        $this->assertEquals('', isset($service['serviceID'])? $service['serviceID'] : '');
+        $this->assertEquals('', isset($service['serviceID']) ? $service['serviceID'] : '');
         $this->assertEquals('', isset($service['abbreviatedService']) ? $service['abbreviatedService'] : '');
 
         //add 10th service, NULL for service (won't add)
@@ -244,7 +245,7 @@ final class ServiceControllerTest extends DatabaseTest
         $this->assertNotEquals('H_NEWSERVICEFORNoGroup', $service['service']);
         $this->assertEquals('', $service['service']);
         $this->assertEquals(null, $service['service']);
-        $this->assertEquals('', isset($service['serviceID'])? $service['serviceID'] : '');
+        $this->assertEquals('', isset($service['serviceID']) ? $service['serviceID'] : '');
         $this->assertEquals('', isset($service['abbreviatedService']) ? $service['abbreviatedService'] : '');
 
 
@@ -268,7 +269,7 @@ final class ServiceControllerTest extends DatabaseTest
         $this->assertNotEquals('', $service['service']);
         $this->assertNotEquals(null, $service['service']);
         $this->assertEquals('I_NEWSERVICEnull', $service['service']);
-        $this->assertEquals('', isset($service['serviceID'])? $service['serviceID'] : '');
+        $this->assertEquals('', isset($service['serviceID']) ? $service['serviceID'] : '');
         $this->assertEquals('', isset($service['abbreviatedService']) ? $service['abbreviatedService'] : '');
 
         //add 12th service, empty string for groupID (casts to 0)
@@ -291,12 +292,14 @@ final class ServiceControllerTest extends DatabaseTest
         $this->assertNotEquals(null, $service['service']);
         $this->assertNotEquals('I_NEWSERVICEnull', $service['service']);
         $this->assertEquals('I_NEWSERVICEemptystr', $service['service']);
-        $this->assertEquals('', isset($service['serviceID'])? $service['serviceID'] : '');
+        $this->assertEquals('', isset($service['serviceID']) ? $service['serviceID'] : '');
         $this->assertEquals('', isset($service['abbreviatedService']) ? $service['abbreviatedService'] : '');
     }
 
     /**
      * Tests the POST `service` endpoint
+     *
+     * @return void
      */
     public function testService_HTMLinput() : void
     {
@@ -322,7 +325,7 @@ final class ServiceControllerTest extends DatabaseTest
         $this->assertArrayHasKey('service', $service);
         $this->assertEquals('3', $service['groupID']);
         $this->assertEquals(html_entity_decode('&lt;script&gt;I_NEWSERVICEhtml&lt;/script&gt;'), $service['service']);
-        $this->assertEquals('', isset($service['serviceID'])? $service['serviceID'] : '');
+        $this->assertEquals('', isset($service['serviceID']) ? $service['serviceID'] : '');
         $this->assertEquals('', isset($service['abbreviatedService']) ? $service['abbreviatedService'] : '');
 
         //with <b></b> tag, doesn't encode
@@ -334,7 +337,7 @@ final class ServiceControllerTest extends DatabaseTest
         $this->assertArrayHasKey('service', $service);
         $this->assertEquals('3', $service['groupID']);
         $this->assertEquals(html_entity_decode('&lt;b&gt;J_NEWSERVICEhtml&lt;/b&gt;'), $service['service']);
-        $this->assertEquals('', isset($service['serviceID'])? $service['serviceID'] : '');
+        $this->assertEquals('', isset($service['serviceID']) ? $service['serviceID'] : '');
         $this->assertEquals('', isset($service['abbreviatedService']) ? $service['abbreviatedService'] : '');
     }
 }
