@@ -8,7 +8,7 @@ describe('DESCRIBE', () => {
     cy.get('#title').click();
     cy.get('#title').type('test test test ');
     cy.get('.item:nth-child(3)').click();
-    cy.get('.hover').click();
+    cy.get('#numform_f4687').click({force: true});
     cy.get('.item:nth-child(3)').click();
     cy.get('#formNextBtn').click();
     cy.get('#record').submit();
