@@ -29,9 +29,9 @@ if (!class_exists('XSSHelpers'))
 
 class Dynicon
 {
-    private $cacheDir = __DIR__.'/cache/';
+    private $cacheDir = 'cache/';
 
-    private $svgSourceDir = __DIR__.'/svg/';
+    private $svgSourceDir = 'svg/';
 
     private $file = '';
 

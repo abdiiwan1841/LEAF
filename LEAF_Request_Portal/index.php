@@ -15,6 +15,7 @@ include __DIR__ . '/globals.php';
 include __DIR__ . '/../libs/smarty/Smarty.class.php';
 include __DIR__ . '/Login.php';
 include __DIR__ . '/db_mysql.php';
+include __DIR__ . '/db_config.php';
 include __DIR__ . '/form.php';
 
 // Include XSSHelpers
@@ -23,6 +24,8 @@ if (!class_exists('XSSHelpers'))
     include_once dirname(__FILE__) . '/../libs/php-commons/XSSHelpers.php';
 }
 
+$db_config = new DB_Config();
+$config = new Config();
 
 header('X-UA-Compatible: IE=edge');
 
@@ -45,14 +48,8 @@ if (!$login->isLogin() || !$login->isInDB())
 }
 
 $main = new Smarty;
-$main->template_dir = __DIR__."/templates/";
-$main->compile_dir = __DIR__."/templates_c/";
 $t_login = new Smarty;
-$t_login->template_dir = __DIR__."/templates/";
-$t_login->compile_dir = __DIR__."/templates_c/";
 $t_menu = new Smarty;
-$t_menu->template_dir = __DIR__."/templates/";
-$t_menu->compile_dir = __DIR__."/templates_c/";
 $o_login = '';
 $o_menu = '';
 $tabText = '';
@@ -504,8 +501,6 @@ switch ($action) {
         $o_login = $t_login->fetch('login.tpl');
 
         $t_form = new Smarty;
-        $t_form->template_dir = __DIR__."/templates/";
-        $t_form->compile_dir = __DIR__."/templates_c/";
         $t_form->left_delimiter = '<!--{';
         $t_form->right_delimiter = '}-->';
 

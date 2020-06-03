@@ -49,6 +49,7 @@ class Form
         // set up org chart assets
         if (!class_exists('Orgchart\Config'))
         {
+            include __DIR__ . '/' . Config::$orgchartPath . '/config.php';
             include __DIR__ . '/' . Config::$orgchartPath . '/sources/Login.php';
             include __DIR__ . '/' . Config::$orgchartPath . '/sources/Employee.php';
             include __DIR__ . '/' . Config::$orgchartPath . '/sources/Position.php';
@@ -69,10 +70,11 @@ class Form
         {
             include __DIR__ . '/' . Config::$orgchartPath . '/sources/Group.php';
         }
-        $oc_db = new DB($config->phonedbHost, $config->phonedbUser, $config->phonedbPass, $config->phonedbName);
+        $config = new Orgchart\Config;
+        $oc_db = new DB($config->dbHost, $config->dbUser, $config->dbPass, $config->dbName);
         $oc_login = new OrgChart\Login($oc_db, $oc_db);
         $oc_login->loginUser();
-        $this->oc_dbName = $config->phonedbName;
+        $this->oc_dbName = $config->dbName;
         $this->employee = new OrgChart\Employee($oc_db, $oc_login);
         $this->position = new OrgChart\Position($oc_db, $oc_login);
         $this->group = new OrgChart\Group($oc_db, $oc_login);
