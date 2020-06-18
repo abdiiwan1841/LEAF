@@ -1,13 +1,14 @@
 package gov.va.leaf
 
 import org.apache.http.entity.ContentType
+import spock.lang.Ignore
 import spock.lang.Unroll
 
 import static gov.va.leaf.CommonSpec.defaultSpec
 import static io.restassured.RestAssured.*
 import static org.hamcrest.Matchers.*
 
-
+@Ignore
 class WorkflowCreateSpec extends BaseSpec {
 
     @Unroll

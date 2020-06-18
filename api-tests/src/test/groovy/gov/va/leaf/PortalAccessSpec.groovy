@@ -5,11 +5,14 @@ import io.restassured.RestAssured
 import io.restassured.builder.ResponseSpecBuilder
 import io.restassured.http.Method
 import io.restassured.specification.ResponseSpecification
+import spock.lang.Ignore
 import spock.lang.Unroll
 
 import static gov.va.leaf.CommonSpec.defaultSpec
 import static io.restassured.RestAssured.*
 import static org.hamcrest.Matchers.*
+
+@Ignore
 
 class PortalAccessSpec extends BaseSpec {
 

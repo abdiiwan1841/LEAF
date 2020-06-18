@@ -4,10 +4,12 @@ import io.restassured.RestAssured
 import io.restassured.filter.cookie.CookieFilter
 import groovy.sql.Sql
 import spock.lang.Specification
+import spock.lang.Ignore
 
 
 import static io.restassured.RestAssured.*
 
+@Ignore
 class BaseSpec extends Specification {
     def cookieFilter = new CookieFilter()
     def CSRFToken =  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
