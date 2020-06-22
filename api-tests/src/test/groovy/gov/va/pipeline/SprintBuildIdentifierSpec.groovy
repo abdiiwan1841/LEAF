@@ -40,12 +40,14 @@ class SprintBuildIdentifierSpec extends Specification {
         then:
             assertThat(pipelineBuildIdentifier, equalTo(expectedSprintBuildIdentifier))
         where:
-            param                                   || expectedSprintBuildIdentifier
-            [date: LocalDate.of(2020, 1, 1)]        || "BLD2020-01-07XX"
-            [date: LocalDate.of(2020, 1, 6)]        || "BLD2020-01-07XX"
-            [date: LocalDate.of(2020, 1, 7)]        || "BLD2020-01-07XX"
-//            [date: LocalDate.of(2020, 1, 8)]        || "BLD2020-01-21XX"
-//            [date: LocalDate.of(2020, 1, 22)]       || "BLD2020-02-04XX"
+            param                                     || expectedSprintBuildIdentifier
+            [date: LocalDate.of(2020, 6, 22)]         || "BLD2020-06-30XX"
+            [date: LocalDate.of(2020, 6, 30)]         || "BLD2020-06-30XX"
+            [date: LocalDate.of(2020, 7, 1)]          || "BLD2020-07-14XX"
+            [date: LocalDate.of(2020, 7, 3)]          || "BLD2020-07-14XX"
+            [date: LocalDate.of(2020, 7, 13)]         || "BLD2020-07-14XX"
+            [date: LocalDate.of(2020, 7, 14)]         || "BLD2020-07-14XX"
+            [date: LocalDate.of(2020, 7, 15)]         || "BLD2020-07-28XX"
     }
 
 
