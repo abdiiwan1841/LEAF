@@ -25,7 +25,7 @@ var LeafFormSearch = function(containerID) {
 		$('#' + containerID).html('<div>\
 			    <img id="'+prefixID+'searchIcon" class="searchIcon" alt="search" style="vertical-align: middle; padding-right: 4px; display: inline;" src="'+ rootURL +'../libs/dynicons/?img=search.svg&w=16">\
 			    <img id="'+prefixID+'searchIconBusy" class="searchIcon" alt="loading" style="vertical-align: middle; padding-right: 4px; display:none" src="'+ rootURL +'images/indicator.gif">\
-					<span style="position: absolute; width: 60%; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); border: 0;" aria-atomic="true" aria-live="polite" class="status" role="status"></span>\
+				<span style="position: absolute; width: 60%; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); border: 0;" aria-atomic="true" aria-live="polite" class="status" role="status"></span>\
 			    <input style="border: 1px solid black; padding: 4px" type="text" id="'+prefixID+'searchtxt" name="searchtxt" size="50" title="Enter your search text" value="" />\
 			    <button class="buttonNorm" id="'+prefixID+'advancedSearchButton">Advanced Options</button>\
 			    <fieldset id="'+prefixID+'advancedOptions" style="position: relative; display: none; margin: 0px; border: 1px solid black; background-color: white">\
@@ -34,6 +34,7 @@ var LeafFormSearch = function(containerID) {
 		        <div style="width: 550px">Find items where...</div>\
 		        <table id="'+prefixID+'searchTerms"></table>\
 		        <button class="buttonNorm" id="'+prefixID+'addTerm" style="float: left">And...</button>\
+		        <button class="buttonNorm" id="'+prefixID+'addOrTerm" style="float: left">Or...</button>\
 		        <br /><br />\
 		        <button id="'+prefixID+'advancedSearchApply" class="buttonNorm" style="text-align: center; width: 100%">Apply Filters</button>\
 		    </fieldset>\
@@ -54,8 +55,8 @@ var LeafFormSearch = function(containerID) {
 	            $('#' + prefixID + 'searchtxt').focus();
 	        });
 	    });
-			//added for keyboard navigation and accessibility to close advanced search options
-			var searchOrigWidth = 0;
+		//added for keyboard navigation and accessibility to close advanced search options
+		var searchOrigWidth = 0;
 	    $('#' + prefixID + 'advancedOptionsClose').on('keydown', function(e) {
 				if(e.keyCode == 13){
 	    	localStorage.setItem(localStorageNamespace + '.search', '');
@@ -94,6 +95,10 @@ var LeafFormSearch = function(containerID) {
 	    	newSearchWidget();
 	    	$('.chosen').chosen({disable_search_threshold: 6}); // needs to be here due to chosen issue with display:none
 	    });
+	    $('#' + prefixID + 'addOrTerm').on('click', function() {
+	    	newOrSearchWidget();
+	    	$('.chosen').chosen({disable_search_threshold: 6}); // needs to be here due to chosen issue with display:none
+	    });
 
 		$('#' + prefixID+ 'searchtxt').on('keydown', function(e) {
 			showBusy();
@@ -104,6 +109,7 @@ var LeafFormSearch = function(containerID) {
 		});
 
 		newSearchWidget();
+		newOrSearchWidget();
 	}
 
 	/**
@@ -169,6 +175,9 @@ var LeafFormSearch = function(containerID) {
         if(isJSON && advSearch != null && widgetCounter <= advSearch.length) {
         	for(var i = 1; i < advSearch.length; i++) {
         		newSearchWidget();
+        	}
+        	for(var i = 1; i < advSearch.length; i++) {
+        		newOrSearchWidget();
         	}
         	for(var i = 0; i < advSearch.length; i++) {
         		$('#' + prefixID + 'widgetTerm_' + i).val(advSearch[i].id);
@@ -750,6 +759,7 @@ var LeafFormSearch = function(containerID) {
 	function newSearchWidget() {
 		var widget = '<tr id="'+prefixID+'widget_'+widgetCounter+'">\
 						<td id="'+prefixID+'widgetRemove_'+widgetCounter+'"><button id="widgetRemoveButton"><img src="'+ rootURL +'../libs/dynicons/?img=list-remove.svg&w=16" style="cursor: pointer" alt="remove search term" tabindex="0"></button></td>\
+						<td id="'+prefixID+'widgetAnd_'+widgetCounter+'">AND</td>\
 						<td><select id="'+prefixID+'widgetTerm_'+widgetCounter+'" style="width: 150px" class="chosen" aria-label="condition">\
             				<option value="title">Title</option>\
             				<option value="serviceID">Service</option>\
@@ -777,6 +787,42 @@ var LeafFormSearch = function(containerID) {
 		widgetCounter++;
 	}
 
+	
+	/**
+	 * @memberOf LeafFormSearch
+	 */
+	function newOrSearchWidget() {
+		var widget = '<tr id="'+prefixID+'widget_'+widgetCounter+'">\
+						<td id="'+prefixID+'widgetRemove_'+widgetCounter+'"><button id="widgetRemoveButton"><img src="'+ rootURL +'../libs/dynicons/?img=list-remove.svg&w=16" style="cursor: pointer" alt="remove search term" tabindex="0"></button></td>\
+						<td id="'+prefixID+'widgetOr_'+widgetCounter+'">OR</td>\
+						<td><select id="'+prefixID+'widgetTerm_'+widgetCounter+'" style="width: 150px" class="chosen" aria-label="condition">\
+            				<option value="title">Title</option>\
+            				<option value="serviceID">Service</option>\
+            				<option value="dateSubmitted">Date Submitted</option>\
+            				<option value="categoryID">Type</option>\
+            				<option value="userID">Initiator</option>\
+            				<option value="dependencyID">Requirement</option>\
+            				<option value="stepID">Current Status</option>\
+            				<option value="data">Data Field</option>\
+            				</select></td>\
+			            <td id="'+prefixID+'widgetCondition_'+widgetCounter+'"></td>\
+						<td id="'+prefixID+'widgetMatch_'+widgetCounter+'"></td>\
+					  </tr>';
+		$(widget).appendTo('#' + prefixID + 'searchTerms');
+		renderWidget(widgetCounter);
+
+		$('#' + prefixID + 'widgetTerm_' + widgetCounter).on('change', '', widgetCounter, function(e) {
+			renderWidget(e.data);
+			$('.chosen').chosen({disable_search_threshold: 6}); // needs to be here due to chosen issue with display:none
+		});
+		$('#' + prefixID + 'widgetRemove_' + widgetCounter).on('click', '', widgetCounter, function(e) {
+			$('#' + prefixID + 'widget_' + e.data).remove();
+		});
+
+		widgetCounter++;
+	}
+
+
 	/**
 	 * @memberOf LeafFormSearch
 	 */
@@ -794,6 +840,15 @@ var LeafFormSearch = function(containerID) {
 						match = '*' + match + '*';
 					}
 					leafFormQuery.addTerm(id, cod, match);
+				} else if(term != 'data'
+					&& term != 'dependencyID') {
+					id = $('#' + prefixID + 'widgetTerm_' + i).val();
+					cod = $('#' + prefixID + 'widgetCod_' + i).val();
+					match = $('#' + prefixID + 'widgetMat_' + i).val();
+					if(cod == 'LIKE') {
+						match = '*' + match + '*';
+					}
+					leafFormQuery.addOrTerm(id, cod, match);
 				}
 				else {
 					id = $('#' + prefixID + 'widgetTerm_' + i).val();

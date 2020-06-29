@@ -39,6 +39,21 @@ var LeafFormQuery = function() {
     	query.terms.push(temp);
     }
 
+/**
+     * Add a new search term
+     * @param id - columnID
+     * @param operator - SQL comparison operator
+     * @param match - search term to match on
+     * @memberOf LeafFormQuery
+     */
+    function addOrTerm(id, operator, match) {
+        var temp = {};
+        temp.id = id;
+        temp.operator = operator;
+        temp.match = match;
+        query.terms.push(temp);
+    }
+
     /**
      * Add a new search term for data table
      * @param id - columnID / 'data' to search data table / 'dependencyID' to search records_dependencies data, matching on 'filled'
@@ -71,6 +86,8 @@ var LeafFormQuery = function() {
     			case 4:
     				addDataTerm(input.terms[i].id, input.terms[i].indicatorID, input.terms[i].operator, input.terms[i].match);
     				break;
+                case 5:
+                    addOrTerm(input.terms[i].id, input.terms[i].operator, input.terms[i].match);
     			default:
     				console.log('Format error');
     				break;
@@ -162,6 +179,25 @@ var LeafFormQuery = function() {
     }
 
     /**
+     * Update an existing search term
+     * @param id - columnID or "stepID"
+     * @param operator - SQL comparison operator
+     * @param match - search term to match on
+     * @memberOf LeafFormQuery
+     */
+    function updateOrTerm(id, operator, match) {
+        for(var i in query.terms) {
+            if(query.terms[i].id == id
+                    || query.terms[i].operator == operator) {
+                query.terms[i].match = match
+                return;
+            }
+        }
+        addOrTerm(id, operator, match);
+    }
+
+
+    /**
      * Update an existing data search term
      * @param id - columnID / 'data' to search data table / 'dependencyID' to search records_dependencies data, matching on 'filled'
      * @param indicatorID - indicatorID / dependencyID
@@ -232,11 +268,13 @@ var LeafFormQuery = function() {
 	return {
 		clearTerms: clearTerms,
 		addTerm: addTerm,
+        addTerm: addOrTerm,
 		addDataTerm: addDataTerm,
 		importQuery: importQuery,
 		getQuery: function() { return query; },
 		getData: getData,
 		updateTerm: updateTerm,
+        updateOrTerm: updateOrTerm,
 		updateDataTerm: updateDataTerm,
 		setQuery: function(inc) { query = inc; },
 		setLimit: setLimit,
