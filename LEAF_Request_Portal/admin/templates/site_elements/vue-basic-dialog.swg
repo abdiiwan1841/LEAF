@@ -4,33 +4,27 @@
 
     <transition name="modal">
 
-    <div class="modal-mask">
-        <div class="modal-wrapper">
-            <div class="modal-container">
+        <div class="vue-dialog">
 
-                <div class="modal-header">
-                    <slot name="header">
-                        Header
-                    </slot>
+            <div class="vue-dialog-content" id="modal-content">
+
+                <div class="vue-dialog-content-title">
+                    Header II
                 </div>
 
-                <div class="modal-body">
-                    <slot name="body">
-                        Body
-                    </slot>
+                <div class="vue-dialog-content">
+                    Body
                 </div>
 
-                <div class="modal-footer">
-                    <slot name="footer">
-                        Footer
-                        <button class="modal-default-button" @click="$emit('close')">
+                <div class="vue-dialog-buttons">
+                    <button class="vue-dialog-button" @click="hide">
                         OK
-                        </button>
-                    </slot>
+                    </button>
                 </div>
+
             </div>
+
         </div>
-    </div>
 
     </transition>
 

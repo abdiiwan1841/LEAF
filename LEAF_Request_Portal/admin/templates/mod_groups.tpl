@@ -1,4 +1,40 @@
+<div>
+
+    <modal name="test-modal">
+
+        <div class="vue-dialog">
+
+            <div class="vue-dialog-content">
+
+                <div class="vue-dialog-content-title">
+                    Header
+                </div>
+
+                <div class="vue-dialog-content">
+                    Body
+                </div>
+
+                <div class="vue-dialog-buttons">
+                    <button class="vue-dialog-button" @click="hide('test-modal')">
+                        OK
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+        
+    </modal>
+
+    <button @click="show('test-modal')">Test Modal</button>
+
+</div>
+
+
+
 <div id="sideBar" style="float: right">
+    <button class="buttonNorm" @click="importGroup2();" style="font-size: 120%"><img src="../../libs/dynicons/?img=edit-copy.svg&w=32" alt="Import Group" /> Import Existing Group2</button>
+    
     <button class="buttonNorm" onclick="importGroup();" style="font-size: 120%"><img src="../../libs/dynicons/?img=edit-copy.svg&w=32" alt="Import Group" /> Import Existing Group</button>
     <button class="buttonNorm" onclick="createGroup();" style="font-size: 120%"><img src="../../libs/dynicons/?img=list-add.svg&w=32" alt="Create Group" /> Create New Group</button>
     <button class="buttonNorm" onclick="showAllGroupHistory();" style="font-size: 120%"><img src="../../libs/dynicons/?img=appointment.svg&w=32" alt="All Group History" /> Show All Group History</button>
@@ -17,6 +53,7 @@
 
 <!--{include file="site_elements/generic_xhrDialog.tpl"}-->
 <!--{include file="site_elements/generic_simple_xhrDialog.tpl"}-->
+<!--{include file="site_elements/vue-basic-dialog.swg"}-->
 
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -501,6 +538,41 @@ function showAllGroupHistory() {
     
 }
 
+function importGroup2() {
+    dialog2.setTitle('Import Group');
+    dialog2.setContent('');
+
+    var groupSel = new groupSelector('groupSel_container');
+    groupSel.apiPath = '<!--{$orgchartPath}-->/api/?a=';
+    groupSel.basePath = '../';
+    groupSel.setResultHandler(function() {
+        if(groupSel.numResults == 0) {
+            groupSel.hideResults();
+        }
+        else {
+            groupSel.showResults();
+        }
+
+        // prevent services from showing up as search results
+        for(var i in groupSel.jsonResponse) {
+            $('#' + groupSel.prefixID + 'grp' + groupSel.jsonResponse[i].groupID).attr('tabindex', '0');
+            if(groupSel.jsonResponse[i].tags.service != undefined) {
+                $('#' + groupSel.prefixID + 'grp' + groupSel.jsonResponse[i].groupID).css('display', 'none');
+            }
+        }
+    });
+    groupSel.initialize();
+
+    dialog2.setSaveHandler(function() {
+        if(groupSel.selection != '') {
+        	tagAndUpdate(groupSel.selection);
+        }
+    });
+    dialog2.show();
+}
+
+
+/*
 var dialog;
 $(function() {
 	dialog = new dialogController('xhrDialog', 'xhr', 'loadIndicator', 'button_save', 'button_cancelchange');
@@ -514,6 +586,22 @@ $(function() {
     });
 	$('#simplexhr').css({width: $(window).width() * .8, height: $(window).height() * .8});
     $('#simplexhrDialog').dialog({minWidth: ($(window).width() * .78) + 30});
+
+    getGroupList();
+});
+*/
+
+var dialog2;
+$(function() {
+	dialog2 = new dialogController2('modal-template', 'modal-content',);
+	//$('#simpleloadIndicator').css({width: $(window).width() * .78, height: $(window).height() * .78});
+
+    //dialog_simple.setCancelHandler(function(){
+        //$('#modal-template').css({width: $(window).width() * .8, height: $(window).height() * .8});
+        //dialog2.setTitle("");
+    //});
+	//$('#modal-template').css({width: $(window).width() * .8, height: $(window).height() * .8});
+    //$('#modal-template').dialog2({minWidth: ($(window).width() * .78) + 30});
 
     getGroupList();
 });

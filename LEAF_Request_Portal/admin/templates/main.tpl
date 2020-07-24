@@ -19,7 +19,12 @@
     <style type="text/css" media="print">
         @import "css/printer.css";
     </style>
+    <style type="text/css" media="screen">
+        @import "../../libs/js/vue-js-modal/styles.css";
+    </style>
     <script type="text/javascript" src="../../libs/js/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="../../libs/js/vuejs/vue.min.js"></script>
+    <script type="text/javascript" src="../js/dialogController2.js"></script>
     {if $useUI == true}
     <script type="text/javascript" src="../../libs/js/jquery/jquery-ui.custom.min.js"></script>
     <script type="text/javascript" src="../js/dialogController.js"></script>
@@ -65,7 +70,7 @@
     <span id="headerMenu">{$menu}</span>
 </div>
 <div id="body">
-    <div id="content">
+    <div id="content" class="leaf-app">
         {if $status != ''}
         <div class="alert"><span>{$status}</span></div>
         {/if}
@@ -75,9 +80,14 @@
     </div>
 </div>
 
+<script type="text/javascript" src="../../libs/js/vue-js-modal/index.js"></script>
+<script type="text/javascript" src="../../libs/js/vue-js-modal/modal-config.js"></script>
+
 <div class="noprint" id="footer"{if $hideFooter == true} style="visibility: hidden; display: none"{/if}>
     <br /><br /><a id="versionID" href="../?a=about">{$smarty.const.PRODUCT_NAME}<br />Version {$smarty.const.VERSION_NUMBER} r{$revision}</a>
 </div>
+
+
 
 </body>
 </html>{/strip}
