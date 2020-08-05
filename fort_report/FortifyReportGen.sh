@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export SCA_VM_OPTS=-Xmx800M
+export SCA_VM_OPTS=-Xmx1200M
 
 # Contents of PROJECT_ID, VERSION_ID, and BUILD_ID will be present the published artifact
 
@@ -16,7 +16,7 @@ FPR_MERGED="$PWD/fort_report/${FILE_PREFIX}_merged.fpr"
 PDF="$PWD/fort_report/${FILE_PREFIX}.pdf"
 PROPERTIES_FILE="$PWD/fort_report/fortify.properties"
 
-MEMORY="-Xmx1600M -Xms1000M -Xss48M"
+MEMORY="-Xmx2100M -Xms1400M -Xss48M"
 TEMPLATE="/workspace/fortify_templates/Security_Report.xml"
 REPORT_OPTIONS="-showRemoved -showSuppressed -showHidden -verbose"
 LAUNCHERSWITCHES="-build-label $BUILD_ID -build-version $VERSION_ID -build-project $PROJECT_ID"
