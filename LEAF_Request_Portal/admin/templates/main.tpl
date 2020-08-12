@@ -25,6 +25,8 @@
     <script type="text/javascript" src="../../libs/js/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="../../libs/js/vuejs/vue.min.js"></script>
     <script type="text/javascript" src="../js/dialogController2.js"></script>
+    <script type="text/javascript" src="../js/vuejsDialogController.js"></script>
+
     {if $useUI == true}
     <script type="text/javascript" src="../../libs/js/jquery/jquery-ui.custom.min.js"></script>
     <script type="text/javascript" src="../js/dialogController.js"></script>

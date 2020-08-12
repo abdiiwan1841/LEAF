@@ -1,32 +1,10 @@
+
+<!--{include file="site_elements/generic_xhrDialog.vue"}-->
+
 <div>
-
-    <modal name="test-modal">
-
-        <div class="vue-dialog">
-
-            <div class="vue-dialog-content">
-
-                <div class="vue-dialog-content-title">
-                    Header
-                </div>
-
-                <div class="vue-dialog-content">
-                    Body
-                </div>
-
-                <div class="vue-dialog-buttons">
-                    <button class="vue-dialog-button" @click="hide('test-modal')">
-                        OK
-                    </button>
-                </div>
-
-            </div>
-
-        </div>
-        
-    </modal>
-
-    <button @click="show('test-modal')">Test Modal</button>
+ 
+    <button @click="dialog2.show('test-modal')">Test Modal</button>
+    <button @click="dialog2.show()">Another Modal</button>
 
 </div>
 
@@ -222,7 +200,7 @@ function getGroupList() {
                 }
                 else { // if is admin
                     function openAdminGroup(){
-                        dialog.setContent(
+                        dialog2.setContent(
                             '<button style="float:right" class="buttonNorm" onclick="viewHistory(1)"><img src="../../libs/dynicons/?img=appointment.svg&amp;w=16" alt="View Status" title="View History" style="vertical-align: middle"> View History</button>'+
                             '<h2 role="heading" tabindex="-1">System Administrators</h2><div id="adminSummary"></div><br /><h3 role="heading" tabindex="-1" >Add Administrator:</h3><div id="employeeSelector"></div>');
 
@@ -232,7 +210,7 @@ function getGroupList() {
                         empSel.outputStyle = 'micro';
                         empSel.initialize();
 
-                        dialog.setSaveHandler(function() {
+                        dialog2.setSaveHandler(function() {
                             if(empSel.selection != '') {
                                 var selectedUserName = empSel.selectionData[empSel.selection].userName;
                                 $.ajax({
@@ -249,7 +227,7 @@ function getGroupList() {
                                     }
                                 });
                             }
-                            dialog.hide();
+                            dialog2.hide();
                         });
                         $.ajax({
                             url: "ajaxJSON.php?a=mod_groups_getMembers&groupID=1",
@@ -270,7 +248,7 @@ function getGroupList() {
                             }
                         });
                         setTimeout(function () {
-                            dialog.show();
+                            dialog2.show();
                         }, 0);
                     }
                 	$('#' + res[i].groupID).on('click', function() {
@@ -296,7 +274,7 @@ function getGroupList() {
 
                     function openPrimaryAdminGroup(){
                         
-                        dialog.setContent('<button style="float:right" class="buttonNorm" onclick="viewHistory()"><img src="../../libs/dynicons/?img=appointment.svg&amp;w=16" alt="View Status" title="View History" style="vertical-align: middle"> View History</button>'+
+                        dialog2.setContent('<button style="float:right" class="buttonNorm" onclick="viewHistory()"><img src="../../libs/dynicons/?img=appointment.svg&amp;w=16" alt="View Status" title="View History" style="vertical-align: middle"> View History</button>'+
                             '<h2 role="heading" tabindex="-1">Primary Administrator</h2><div id="primaryAdminSummary"></div><br /><h3 role="heading" tabindex="-1" >Set Primary Administrator:</h3><div id="employeeSelector"></div>');
 
                         empSel = new nationalEmployeeSelector('employeeSelector');
@@ -305,7 +283,7 @@ function getGroupList() {
                         empSel.outputStyle = 'micro';
                         empSel.initialize();
 
-                        dialog.setSaveHandler(function() {
+                        dialog2.setSaveHandler(function() {
                             if(empSel.selection != '') {
                                 var selectedUserName = empSel.selectionData[empSel.selection].userName;
                                 $.ajax({
@@ -330,7 +308,7 @@ function getGroupList() {
                                     }
                                 });
                             }
-                            dialog.hide();
+                            dialog2.hide();
                         });
                         $.ajax({
                             url: "ajaxJSON.php?a=mod_groups_getMembers&groupID=1",
@@ -357,7 +335,7 @@ function getGroupList() {
                             }
                         });
                         setTimeout(function () {
-                            dialog.show();
+                            dialog2.show();
                         }, 0);
                     }
                     $('#primaryAdmin').on('click', function() {
@@ -523,15 +501,15 @@ function createGroup() {
 }
 
 function showAllGroupHistory() {
-    dialog.setTitle('All Group History');
+    dialog2.setTitle('All Group History');
     $.ajax({
         type: 'GET',
         url: 'ajaxIndex.php?a=gethistoryall&type=group',
         dataType: 'text',
         success: function(res) {
-            dialog.setContent(res);
-            dialog.indicateIdle();
-            dialog.show();
+            dialog2.setContent(res);
+            dialog2.indicateIdle();
+            dialog2.show();
         },
         cache: false
     });
@@ -589,11 +567,13 @@ $(function() {
 
     getGroupList();
 });
-*/
 
+*/
 var dialog2;
 $(function() {
-	dialog2 = new dialogController2('modal-template', 'modal-content',);
+    dialog2 = new vuejsDialogController('test-modal', 'vue-content', 'loadIndicator', 'button_save', 'button_cancelchange');
+    //dialog2.show();
+	//dialog2 = new dialogController2('modal-template', 'modal-content',);
 	//$('#simpleloadIndicator').css({width: $(window).width() * .78, height: $(window).height() * .78});
 
     //dialog_simple.setCancelHandler(function(){

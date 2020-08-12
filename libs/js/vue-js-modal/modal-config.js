@@ -1,3 +1,4 @@
+/*
 var VueJSModal = window['vue-js-modal'].default;
 
 Vue.use(VueJSModal, {
@@ -24,3 +25,4 @@ var app = new Vue({
         }
     },
 });
+*/
