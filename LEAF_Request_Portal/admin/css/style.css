@@ -218,6 +218,11 @@ table.leaf_grid {
     border: 1px solid black;
     border-collapse: collapse;
     margin: 2px;
+    width: 98%;
+}
+table.leaf_grid td {
+    vertical-align: top;
+    word-break: break-all;
 }
 
 table.leaf_grid>tbody {
