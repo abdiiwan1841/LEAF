@@ -110,7 +110,7 @@ function doesSiteExist($typeToCheck, $sitePath){
         Routing_Config::$dbPass,
         array()
     );
-    $sql = "SELECT * FROM $table WHERE path = '$sitePath';";
+    $sql = "SELECT * FROM $table WHERE path = LOWER('$sitePath');";
     $query = $db->prepare($sql);
     $query->execute(array());
     $res = $query->fetchAll(PDO::FETCH_ASSOC);

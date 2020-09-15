@@ -9,7 +9,7 @@ services:
           - BUILD_UID=${BUILD_UID}
       ports:
         - 80:80
-        - 443:443
+        - 443
       links:
         - mysql
       volumes:
