@@ -7,3 +7,4 @@ services:
         dockerfile: docker/php/Dockerfile
       ports:
         - 80:80
+        - 9253:9253

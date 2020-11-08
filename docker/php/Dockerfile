@@ -1,3 +1,5 @@
+FROM hipages/php-fpm_exporter:latest as fpmexporter
+
 FROM ubuntu:18.04
 MAINTAINER Dastan Rahimi <dastan.rahimi@ablevets.com>
 
@@ -58,6 +60,7 @@ COPY /healthcheck/ /var/www/html/healthcheck
 COPY /docker/php/etc/php-fpm-healthcheck.sh /usr/local/bin/php-fpm-healthcheck
 COPY /docker/php/etc/pod-healthcheck.sh /usr/local/bin/pod-healthcheck
 
+COPY --from=fpmexporter /php-fpm_exporter /php-fpm_exporter
 
 ARG BUILD_UID=1000
 RUN useradd -u $BUILD_UID -g www-data build_user
