@@ -1,14 +1,14 @@
-<modal id="simplexhrDialog" name="simplexhrDialog" role="dialog" :height="this.height" :minWidth="this.minWidth" :adaptive="true" :scrollable="true">
+<modal id="simplexhrDialog" name="simplexhrDialog" role="dialog" class="leaf-padAll1rem" :height="this.height" :minWidth="this.minWidth" :adaptive="true" :scrollable="true">
     
-    <div role="document">
+    <div role="document" class="leaf-padAll1rem">
         
         <div id="simpleloadIndicator" class="leaf-dialog-loader">
             Loading...<img src="../images/largespinner.gif" alt="loading..." />
         </div>
 
-        <div class="vue-dialog-content-title" id="vue-title">
-            {{ this.title }}
-            <span style="padding: 10px; float: right;"><button @click="this.hide">X</button></span>
+        <div id="vue-title">
+            <span class="ui-dialog-title">{{ this.title }}</span>
+            <span style="float: right;"><button @click="this.hide"><i class="fas fa-window-close"></i></button></span>
         </div>
 
         <main id="simplexhr" class="leaf-dialog-content" role="main" v-html="this.content"></main>

@@ -248,7 +248,7 @@ function getGroupList() {
                         dialog.showButtons();
                         dialog.setTitle('Editor');
                         dialog.setContent(
-                            '<button class="usa-button usa-button--secondary leaf-btn-small leaf-float-right" onclick="viewHistory(1)">View History</button>'+
+                            '<button class="usa-button usa-button--secondary leaf-btn-small leaf-float-right leaf-font1rem" onclick="viewHistory(1)">View History</button>'+
                             '<h3 role="heading" tabindex="-1">System Administrators</h3><div id="adminSummary"></div><div class="leaf-marginTop-2rem"><h3 class="usa-label leaf-marginTop-1rem" role="heading" tabindex="-1">Add Administrator</h3></div><div id="employeeSelector" class="leaf-marginTop-1rem"></div>');
 
                         empSel = new nationalEmployeeSelector('employeeSelector');
@@ -322,7 +322,7 @@ function getGroupList() {
 
                     function openPrimaryAdminGroup(){
                       dialog.setTitle('Editor');
-                      dialog.setContent('<button class="usa-button usa-button--secondary leaf-btn-small leaf-float-right" onclick="viewHistory()">View History</button>'+
+                      dialog.setContent('<button class="usa-button usa-button--secondary leaf-btn-small leaf-float-right leaf-font1rem" onclick="viewHistory()">View History</button>'+
                             '<h2 role="heading" tabindex="-1">Primary Administrator</h2><div id="primaryAdminSummary"></div><h3 role="heading" tabindex="-1" class="leaf-marginTop-1rem">Set Primary Administrator</h3><div id="employeeSelector"></div>');
 
                         empSel = new nationalEmployeeSelector('employeeSelector');
