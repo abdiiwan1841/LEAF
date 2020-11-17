@@ -1313,6 +1313,7 @@ function loadWorkflowList(workflowID)
 function viewHistory(){
     dialog_simple.setContent('');
     dialog_simple.setTitle('Workflow History');
+    dialog_simple.setSpinnerText("Loading History...");
 	dialog_simple.indicateBusy();
 
     $.ajax({

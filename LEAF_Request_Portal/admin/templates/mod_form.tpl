@@ -85,6 +85,7 @@ function editProperties(isSubForm) {
 		setTimeout(function () {dialog.show();}, 0);
 
         // load workflow data
+        dialog.setSpinnerText("Loading Workflow...");
         dialog.indicateBusy();
         $.ajax({
         	type: 'GET',
@@ -1956,6 +1957,7 @@ function viewHistory(categoryId){
     dialog_simple.setContent('');
     dialog_simple.setTitle('Form History');
     dialog_simple.show();
+    dialog_simple.setSpinnerText("Loading Form History...");
 	dialog_simple.indicateBusy();
 
     $.ajax({

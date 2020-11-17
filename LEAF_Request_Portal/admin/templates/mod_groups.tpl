@@ -421,6 +421,7 @@ function viewHistory(groupID){
     $(".leaf-dialog-content").css('width', 'auto');
     dialog_simple.setContent('');
     dialog_simple.setTitle('Group history');
+    dialog_simple.setSpinnerText("Loading History...");
     dialog_simple.indicateBusy();
     dialog.showButtons();
 

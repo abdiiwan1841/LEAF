@@ -6,7 +6,7 @@
 function dialogController(containerID, contentID, indicatorID, btnSaveID, btnCancelID) {
 	this.containerID = containerID;
 	this.contentID = contentID;
-	this.indicatorID = indicatorID;
+	this.indicatorID = "loadIndicator";
 	this.btnSaveID = btnSaveID;
 	this.btnCancelID = btnCancelID;
 	this.dialogControllerXhrEvent = null;
@@ -61,7 +61,7 @@ dialogController.prototype.hide = function() {
 
 dialogController.prototype.show = function() {
 	if($('#' + this.contentID).html() == '') {
-		$('#' + this.indicatorID).css('visibility', 'visible');
+		$('#' + this.indicatorID).css('display', '');
 	}
 	$('#' + this.containerID).dialog('open');
 	$('#' + this.containerID).css('visibility', 'visible');
@@ -74,12 +74,12 @@ dialogController.prototype.setContent = function(content) {
 };
 
 dialogController.prototype.indicateBusy = function() {
-    $('#' + this.indicatorID).css('visibility', 'visible');
+    $('#' + this.indicatorID).css('display', '');
     $('#' + this.btnSaveID).css('visibility', 'hidden');
 };
 
 dialogController.prototype.indicateIdle = function() {
-    $('#' + this.indicatorID).css('visibility', 'hidden');
+    $('#' + this.indicatorID).css('display', 'none');
     $('#' + this.btnSaveID).css('visibility', 'visible');
 };
 
@@ -215,4 +215,10 @@ dialogController.prototype.setRequiredError = function(id, func) {
 
 dialogController.prototype.setRequiredOk = function(id, func) {
 	this.requirementOks[id] = func;
+};
+
+dialogController.prototype.setSpinnerText = function(spinnerText) {
+	spinnerText = (spinnerText == null || spinnerText == '' ? 'Loading ...' : spinnerText);
+	$("#spinnerId").text(spinnerText);
+	$("#sr-only-text").text(spinnerText);
 };

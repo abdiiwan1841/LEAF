@@ -268,6 +268,7 @@ function viewHistory(groupID){
     dialog_simple.setContent('');
     dialog_simple.setTitle('Service chief history');
 	dialog_simple.show();
+    dialog_simple.setSpinnerText("Loading History...");
 	dialog_simple.indicateBusy();
 
     $.ajax({

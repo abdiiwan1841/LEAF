@@ -1,10 +1,8 @@
+<!--{include file="../../../templates/spinner.tpl"}-->
+
 <div id="simplexhrDialog" role="dialog" class="leaf-dialog-container">
     
     <div role="document">
-        
-        <div id="simpleloadIndicator" class="leaf-dialog-loader">
-            Loading...<img src="../images/largespinner.gif" alt="loading..." />
-        </div>
 
         <main id="simplexhr" class="leaf-dialog-content" role="main"></main>
         

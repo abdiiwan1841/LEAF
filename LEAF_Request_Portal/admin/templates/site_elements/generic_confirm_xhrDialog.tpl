@@ -1,12 +1,10 @@
+<!--{include file="../../../templates/spinner.tpl"}-->
+
 <div id="confirm_xhrDialog" class="leaf-dialog-container" role="dialog">
     
     <form id="confirm_record" enctype="multipart/form-data" action="javascript:void(0);">
         
         <div role="document">
-            
-             <div id="confirm_loadIndicator" class="leaf-dialog-loader">
-                Loading...<img src="../images/largespinner.gif" alt="loading..." />
-            </div>
 
             <main id="confirm_xhr" class="leaf-dialog-content" role="main"></main>
 
