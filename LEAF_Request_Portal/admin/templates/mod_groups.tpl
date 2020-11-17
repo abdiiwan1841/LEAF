@@ -7,7 +7,8 @@
             <ul class='usa-sidenav'>
                 <li class='usa-sidenav__item'><a href='javascript:void(0)' id='allGroupsLink' class='usa-current'>All groups (<span id='allGroupsCount'>-</span>)</a></li>
                 <li class='usa-sidenav__item'><a href='javascript:void(0)' id='sysAdminsLink'>System administrators (<span id='sysAdminsCount'>-</span>)</a></li>
-                <li class='usa-sidenav__item'><a href='javascript:void(0)' id='userGroupsLink'>User groups (<span id='userGroupsCount'>-</span>)</a></li>
+                <li class='usa-sidenav__item'><a href='javascript:void(0)' id='userGroupsLink'>User groups (<span id='userGroupCount'>-</span>)</a></li>
+                <li class='usa-sidenav__item'><a href='javascript:void(0)' id='svcChiefsLink'>Service chiefs (<span id='svcChiefsCount'>-</span>)</a></li>
             </ul>
         </aside>
     "}-->
@@ -41,6 +42,13 @@
             </div>
         </div>
 
+        <div id="svcChiefs" class="leaf-marginTop-1rem">
+            <div class="leaf-clear-both">
+                <h3 role="heading" tabindex="-1" class="groupHeaders groupSvcChiefs">Service chiefs</h3>
+                <div id="svcChiefList"></div>
+            </div>
+        </div>
+
     </main>
 
     <!-- RIGHT SIDE NAV -->
@@ -57,6 +65,12 @@
                 Show group history
             </button>
         </aside>
+        <aside class='sidenav-right leaf-marginTop-halfRem'>
+            <h3 class='navhead'>Access groups</h3>
+            <button id='btn_uploadFile' class='usa-button leaf-side-btn' onclick='syncServices();'>
+                Sync with Nexus
+            </button>
+        </aside>
     "}-->
     <!--{include file="partial_layouts/right_side_nav.tpl" contentRight="$right_nav_content"}-->
 
@@ -64,6 +78,7 @@
 
 <!--{include file="site_elements/generic_xhrDialog.tpl"}-->
 <!--{include file="site_elements/generic_simple_xhrDialog.tpl"}-->
+<!--{include file="site_elements/generic_confirm_xhrDialog.tpl"}-->
 
 <script>
 
@@ -84,9 +99,9 @@ $(document).ready(function() {
         $('#userGroupSearch').val('');
         searchGroups();
         $('#userGroupSearch').focus();
-        $('#userGroups').hide();
+        $('#userGroups, #svcChiefs').hide();
         $('#sysAdmins').show();
-        $('#userGroupsLink, #allGroupsLink').removeClass('usa-current');
+        $('#userGroupsLink, #allGroupsLink, #svcChiefsLink').removeClass('usa-current');
         $(this).addClass('usa-current');
     });
     // user groups
@@ -94,9 +109,19 @@ $(document).ready(function() {
         $('#userGroupSearch').val('');
         searchGroups();
         $('#userGroupSearch').focus();
-        $('#sysAdmins').hide();
+        $('#sysAdmins, #svcChiefs').hide();
         $('#userGroups').show();
-        $('#sysAdminsLink, #allGroupsLink').removeClass('usa-current');
+        $('#sysAdminsLink, #allGroupsLink, #svcChiefsLink').removeClass('usa-current');
+        $(this).addClass('usa-current');
+    });
+    // service chiefs
+    $('#svcChiefsLink').click(function() {
+        $('#userGroupSearch').val('');
+        searchGroups();
+        $('#userGroupSearch').focus();
+        $('#sysAdmins, #userGroups').hide();
+        $('#svcChiefs').show();
+        $('#sysAdminsLink, #allGroupsLink, #userGroupsLink').removeClass('usa-current');
         $(this).addClass('usa-current');
     });
 });
@@ -213,6 +238,19 @@ function getMembers(groupID) {
     });
 }
 
+function syncServices() {
+    dialog_simple.setTitle('Importing from Nexus...');
+    dialog_simple.show();
+    $.ajax({
+        type: 'GET',
+        url: "../scripts/updateServicesFromOrgChart.php",
+        success: function(response) {
+            dialog_simple.setContent(response);
+        },
+        cache: false
+    });
+}
+
 function getPrimaryAdmin() {
     $.ajax({
         url: "ajaxJSON.php?a=mod_groups_getMembers&groupID=1",
@@ -302,6 +340,138 @@ function setPrimaryAdmin(userID) {
         },
         cache: false
     });
+}
+
+function getSvcChiefList() {
+	$.when(
+	    $.ajax({
+	        type: 'GET',
+	        url: '../api/service/quadrads',
+	        cache: false
+	    }),
+        $.ajax({
+            type: 'GET',
+            url: '../api/service',
+            cache: false
+        })
+     )
+	.done(function(res1, res2) {
+		var quadrads = res1[0];
+		var services = res2[0];
+        var scCount = 0;
+	    for(var i in quadrads) {
+	    	$('#svcChiefList').append('<h4>'+ toTitleCase(quadrads[i].name) +'</h4><div id="group_'+ quadrads[i].groupID +'" class="leaf-displayFlexRow"></div>');
+	    }
+	    for(var i in services) {
+	    	$('#group_' + services[i].groupID).append('<div id="'+ services[i].serviceID +'" title="serviceID: '+ services[i].serviceID +'" class="groupBlockWhite">'
+                    + '<h2 id="groupTitle'+ services[i].serviceID +'">'+ services[i].service +'</h2>'
+                    + '<div id="members'+ services[i].serviceID +'"></div>'
+                    + '</div>');
+	    	initiateWidget(services[i].serviceID);
+	    	populateMembers(services[i].serviceID, services[i].members);
+            scCount++;
+	    }
+        // update numbers in left nav
+        $('#svcChiefsCount').text(scCount);
+	});
+}
+
+function addTotalNumbers(total1) {
+    var svcChiefsCount = $('#svcChiefsCount').text();
+    var countNum = parseInt(svcChiefsCount);
+    var finalTotal = total1 + countNum;
+    $('#allGroupsCount').text(finalTotal);
+}
+
+
+
+function initiateWidget(serviceID) {
+    $('#' + serviceID).on('click', function(serviceID) {
+        return function() {
+            $.ajax({
+                type: 'GET',
+                url: '../api/service/' + serviceID + '/members',
+                success: function(res) {
+                    dialog.clear();
+                    var button_deleteGroup = '<button id="deleteGroup_'+serviceID+'" class="usa-button usa-button--secondary leaf-btn-small">Delete this group</button>';
+                    if(serviceID > 0) {
+                        button_deleteGroup = '';
+                    }
+                    dialog.setContent(
+                        '<button class="usa-button usa-button--secondary leaf-btn-small leaf-float-right" onclick="viewHistory(' + serviceID + ')">View History</button>'+
+                        '<div id="employees"></div><h3 class="leaf-marginTop-1rem">Add Employee</h3><div id="employeeSelector"></div>' + button_deleteGroup);
+                    $('#employees').html('<div id="employee_table" class="leaf-marginTopBot-1rem"></div>');
+                    var counter = 0;
+                    for(var i in res) {
+                        var removeButton = '<a href="#" class="text-secondary-darker leaf-font0-8rem" id="removeMember_'+ counter +'">REMOVE</a>';
+                        var managedBy = '';
+                        if(res[i].locallyManaged != 1) {
+                            managedBy += '<div class="leaf-marginLeft-qtrRem leaf-font0-8rem">&bull; Managed in Org. Chart</div>';
+                        }
+                        if(res[i].active != 1) {
+                            managedBy += '<div class="leaf-marginLeft-qtrRem leaf-font0-8rem">&bull; Managed in Org. Chart</div>';
+                            managedBy += '<div class="leaf-marginLeft-qtrRem leaf-font0-8rem">&bull; Override set, and they do not have access</div>';
+                            removeButton = '<a href="#" class="text-secondary-darker leaf-font0-8rem" id="removeMember_'+ counter +'">REMOVE OVERRIDE</a>';
+                        }
+                        $('#employee_table').append('<div class="leaf-font0-9rem leaf-marginTop-halfRem"><span class="leaf-bold">'+ toTitleCase(res[i].Fname) + ' ' + toTitleCase(res[i].Lname) + '</span> - ' + removeButton + ' '+ managedBy +'</div>');
+                        $('#removeMember_' + counter).on('click', function(userID) {
+                            return function() {
+                                removeUser(serviceID, userID);
+                                dialog.hide();
+                            };
+                        }(res[i].userName));
+                        counter++;
+                    }
+
+                    $('#deleteGroup_' + serviceID).on('click', function() {
+                        dialog_confirm.setContent('Are you sure you want to delete this service?');
+                        dialog_confirm.setSaveHandler(function() {
+                            $.ajax({
+                                type: 'DELETE',
+                                url: "../api/service/" + serviceID + '&CSRFToken=<!--{$CSRFToken}-->',
+                                success: function(response) {
+                                    location.reload();
+                                },
+                                cache: false
+                            });
+                        });
+                        dialog_confirm.show();
+                    });
+                    
+                    empSel = new nationalEmployeeSelector('employeeSelector');
+                    empSel.apiPath = '<!--{$orgchartPath}-->/api/?a=';
+                    empSel.rootPath = '<!--{$orgchartPath}-->/';
+                    empSel.outputStyle = 'micro';
+                    empSel.initialize();
+
+                    dialog.setSaveHandler(function() {
+                        if(empSel.selection != '') {
+                            var selectedUserName = empSel.selectionData[empSel.selection].userName;
+                            $.ajax({
+                                type: 'POST',
+                                url: '<!--{$orgchartPath}-->/api/employee/import/_' + selectedUserName,
+                                data: {CSRFToken: '<!--{$CSRFToken}-->'},
+                                success: function(res) {
+                                    if(!isNaN(res)) {
+                                        addUser(serviceID, selectedUserName);
+                                    }
+                                    else {
+                                        alert(res);
+                                    }
+                                },
+                                cache: false
+                            });
+                        }
+                        getMembers(serviceID);
+                        dialog.hide();
+                    });
+
+                    dialog.show();
+                },
+                cache: false
+            });
+        };
+    }(serviceID));
 }
 
 function getGroupList() {
@@ -551,10 +721,10 @@ function getGroupList() {
                 }
             }
             // update total numbers in left nav
-            allGroupsCount = userGroupCount + sysAdminCount;
-            $('#allGroupsCount').text(allGroupsCount);
-            $('#userGroupsCount').text(userGroupCount);
             $('#sysAdminsCount').text(sysAdminCount);
+            $('#userGroupCount').text(userGroupCount);
+            var groupsTotal = sysAdminCount + userGroupCount;
+            addTotalNumbers(groupsTotal);
             // enable search box
             $('#userGroupSearch').attr('disabled',false);
             // focus on search box
@@ -738,7 +908,9 @@ var dialog;
 $(function() {
 	dialog = new dialogController('xhrDialog', 'xhr', 'loadIndicator', 'button_save', 'button_cancelchange');
 	dialog_simple = new dialogController('simplexhrDialog', 'simplexhr', 'simpleloadIndicator', 'simplebutton_save', 'simplebutton_cancelchange');
+    dialog_confirm = new dialogController('confirm_xhrDialog', 'confirm_xhr', 'confirm_loadIndicator', 'confirm_button_save', 'confirm_button_cancelchange');
     getGroupList();
+    getSvcChiefList();
 });
 
 /* ]]> */
