@@ -89,9 +89,8 @@ $(document).ready(function() {
         $('#userGroupSearch').val('');
         searchGroups();
         $('#userGroupSearch').focus();
-        $('#sysAdmins').show();
-        $('#userGroups').show();
-        $('#sysAdminsLink, #userGroupsLink').removeClass('usa-current');
+        $('#sysAdmins, #userGroups, #svcChiefs').show();
+        $('#sysAdminsLink, #userGroupsLink, #svcChiefsLink').removeClass('usa-current');
         $(this).addClass('usa-current');
     });
     // sys admins
