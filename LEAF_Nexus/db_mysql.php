@@ -4,9 +4,8 @@
  */
 
 /*
-    Generic database access for MySQL databases
-    Date: September 4, 2007
-
+    db_mysql is a convienience layer
+    Date Created: September 4, 2007
  */
 
 class DB
@@ -154,13 +153,16 @@ class DB
             }
         }
 
-        $res = $this->db->query($sql);
-        if ($res !== false)
-        {
-            return $res->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $res = $this->db->query($sql);
+            if ($res !== false)
+            {
+                return $res->fetchAll(PDO::FETCH_ASSOC);
+            }
         }
-        $err = $this->db->errorInfo();
-        $this->logError($err[2]);
+        catch(PDOException $e) {
+            trigger_error($e);
+        }
 
         if ($this->debug)
         {
@@ -192,10 +194,20 @@ class DB
             }
         }
 
+        $result = [];
         if ($dry_run == false && $this->dryRun == false)
         {
-            $query = $this->db->prepare($sql);
-            $query->execute($vars);
+            try {
+                $query = $this->db->prepare($sql);
+                $query->execute($vars);
+
+                if(stripos($sql, 'SELECT') === 0) {
+                    $result = $query->fetchAll(PDO::FETCH_ASSOC);
+                }
+            }
+            catch(PDOException $e) {
+                trigger_error($e);
+            }
         }
         else
         {
@@ -207,7 +219,7 @@ class DB
             $this->time += microtime(true) - $time1;
         }
 
-        return $query->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
     }
 
     /**
