@@ -1794,19 +1794,21 @@ class Form
             }
             $uniqueCategoryIDs = trim($uniqueCategoryIDs, ',');
 
-            $catsInGroups = $this->db->prepared_query(
-                "SELECT * FROM category_privs WHERE categoryID IN ({$uniqueCategoryIDs}) AND readable = 1",
-                array()
-            );
-            if (count($catsInGroups) > 0)
-            {
-                $groups = $this->login->getMembership();
-                foreach ($catsInGroups as $cat)
+            if($uniqueCategoryIDs != '') {
+                $catsInGroups = $this->db->prepared_query(
+                    "SELECT * FROM category_privs WHERE categoryID IN ({$uniqueCategoryIDs}) AND readable = 1",
+                    array()
+                );
+                if (count($catsInGroups) > 0)
                 {
-                    if (isset($groups['groupID'][$cat['groupID']])
-                        && $groups['groupID'][$cat['groupID']] == 1)
+                    $groups = $this->login->getMembership();
+                    foreach ($catsInGroups as $cat)
                     {
-                        $hasCategoryAccess[$cat['categoryID']] = 1;
+                        if (isset($groups['groupID'][$cat['groupID']])
+                            && $groups['groupID'][$cat['groupID']] == 1)
+                        {
+                            $hasCategoryAccess[$cat['categoryID']] = 1;
+                        }
                     }
                 }
             }
@@ -2831,7 +2833,7 @@ class Form
 
         $joinCategoryID = false;
         $joinAllCategoryID = false;
-        $joinRecords_Dependencies = false;
+        $joinRecordsDependencies = false;
         $joinRecords_Step_Fulfillment = false;
         $joinActionHistory = false;
         $joinRecordResolutionData = false;
